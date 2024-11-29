@@ -1,18 +1,21 @@
-import { AlgorithmSwitcher } from "@/components/AlgorithmSwitcher";
 // import SearchInput from "@/components/SearchInput";
-import TextFilesList from "@/components/text-file-list";
+// import TextFilesList from "@/components/text-file-list";
+import GenerateInvertedIndexButton from "@/components/create-reversed-index";
+import MaxWidthWrapper from "@/components/max-width-wrapper";
 
 export default function Home() {
   return (
-    <div className="w-full h-screen ">
-      <div className="w-full h-[100px] flex items-center justify-end">
-        <AlgorithmSwitcher />
-      </div>
+    <MaxWidthWrapper>
+      <div className="w-full h-screen ">
+        <div className="w-full h-[100px] flex items-center justify-end">
+          <GenerateInvertedIndexButton />
+        </div>
 
-      <div className="w-full h-[calc(100%-100px)] flex flex-col items-center ">
-        {/* <SearchInput /> */}
-        <TextFilesList />
+        <div className="w-full h-[calc(100%-100px)] flex flex-col items-center ">
+          {/* <SearchInput /> */}
+          {/* <TextFilesList /> */}
+        </div>
       </div>
-    </div>
+    </MaxWidthWrapper>
   );
 }

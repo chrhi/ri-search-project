@@ -17,7 +17,7 @@ interface InvertedIndex {
 }
 
 export default function InvertedIndexDisplay() {
-  const [invertedIndex, setInvertedIndex] = useState<InvertedIndex>({});
+  const [invertedIndex] = useState<InvertedIndex>({});
   const [isLoading, setIsLoading] = useState(true);
   const hasFetchedRef = useRef(false);
 
