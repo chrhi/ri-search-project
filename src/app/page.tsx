@@ -2,6 +2,7 @@
 // import TextFilesList from "@/components/text-file-list";
 import GenerateInvertedIndexButton from "@/components/create-reversed-index";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
+import SearchComponent from "@/components/SearchInput";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
 
         <div className="w-full h-[calc(100%-100px)] flex flex-col items-center ">
           {/* <SearchInput /> */}
+          <SearchComponent />
           {/* <TextFilesList /> */}
         </div>
       </div>
