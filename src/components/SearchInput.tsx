@@ -2,20 +2,12 @@
 
 import React, { useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import { Search } from "lucide-react";
+import { File, Search } from "lucide-react";
 import { Button } from "./ui/button";
-
-interface SearchResult {
-  term: string;
-  documents: Array<{
-    docId: string;
-    positions: number[];
-  }>;
-}
 
 export default function SearchComponent() {
   const [query, setQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,15 +75,10 @@ export default function SearchComponent() {
           <h3 className="text-lg font-semibold mb-3">Search Results</h3>
           {searchResults.map((result, index) => (
             <div key={index} className="mb-3 pb-3 border-b last:border-b-0">
-              <div className="font-medium mb-2">Term: {result.term}</div>
-              {result.documents.map((doc, docIndex) => (
-                <div
-                  key={docIndex}
-                  className="text-sm text-gray-600 pl-4 before:content-['•'] before:mr-2"
-                >
-                  Document {doc.docId}: Positions {doc.positions.join(", ")}
-                </div>
-              ))}
+              <div className="font-medium mb-2 flex items-center justify-start gap-x-4">
+                <File className={"text-blue-500 w-5 h-5"} />
+                <p>{result}</p>
+              </div>
             </div>
           ))}
         </div>

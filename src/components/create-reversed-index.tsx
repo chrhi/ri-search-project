@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button"; // Adjust the path to your ShadCN button
-import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react"; // Lucide icons
+import { Button } from "@/components/ui/button";
+import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 
 const GenerateInvertedIndexButton = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +34,7 @@ const GenerateInvertedIndexButton = () => {
     <div className="flex flex-col items-center space-y-4">
       <Button
         onClick={generateInvertedIndex}
-        disabled={isLoading}
+        disabled={true}
         className="font-bold p-4 rounded-xl flex items-center"
       >
         {isLoading ? (

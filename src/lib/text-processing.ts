@@ -15,9 +15,10 @@ interface InvertedIndex {
   }[];
 }
 
-function normalizeTerms(text: string): string[] {
+export function normalizeTerms(text: string): string[] {
   const words = text.toLowerCase().split(/\s+/);
   return words
+    .filter((word) => word.trim() !== "") // Remove empty strings
     .filter((word) => !stoplist.includes(word))
     .map((word) => PorterStemmer.stem(word));
 }
