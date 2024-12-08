@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { normalizeTerms } from "@/lib/text-processing"; // Assuming this is where normalization is defined
 import { getInvertedIndex } from "@/lib/db-functions";
 
-// Type for Inverted Index Entry
 interface InvertedIndexEntry {
   docId: string;
   positions: number[];
@@ -18,6 +17,8 @@ interface InvertedIndexResult {
 async function performBooleanSearch(query: string): Promise<string[]> {
   // Normalize the query terms
   const normalizedTerms = normalizeTerms(query);
+
+  // ali is here -> ['ali' , 'here"]
 
   console.log("these are the normalize terms ");
   console.log(normalizedTerms);
