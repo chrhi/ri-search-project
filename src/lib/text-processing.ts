@@ -15,7 +15,7 @@ interface InvertedIndex {
   }[];
 }
 
-export function normalizeTerms(text: string): string[] {
+export function handleTerms(text: string): string[] {
   const words = text.toLowerCase().split(/\s+/);
   return words
     .filter((word) => word.trim() !== "") // Remove empty strings
@@ -33,7 +33,7 @@ export async function getTextFileData(
     const filePath = path.join(folderPath, file);
     const fileContent = await fs.promises.readFile(filePath, "utf8");
     const docNumber = file.slice(0, -4); // Remove the .txt extension
-    const terms = normalizeTerms(fileContent);
+    const terms = handleTerms(fileContent);
 
     textFileData.push({
       docNumber,

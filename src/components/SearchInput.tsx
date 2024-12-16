@@ -12,8 +12,6 @@ export default function SearchComponent() {
   const [error, setError] = useState<string | null>(null);
 
   const handleSearch = async () => {
-    if (!query.trim()) return;
-
     setSearchResults([]);
     setError(null);
     setIsSearching(true);
@@ -81,6 +79,14 @@ export default function SearchComponent() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {searchResults.length === 0 && (
+        <div className="border rounded-lg p-4">
+          <h3 className="text-lg font-semibold mb-3">
+            there is nothing to show
+          </h3>
         </div>
       )}
     </div>

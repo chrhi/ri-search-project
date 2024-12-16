@@ -34,7 +34,7 @@ const GenerateInvertedIndexButton = () => {
     <div className="flex flex-col items-center space-y-4">
       <Button
         onClick={generateInvertedIndex}
-        disabled={true}
+        disabled={false}
         className="font-bold p-4 rounded-xl flex items-center"
       >
         {isLoading ? (

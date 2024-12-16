@@ -7,7 +7,7 @@ export async function GET() {
   const COLLECTION_TIME_FOLDER_PATH = path.join(
     process.cwd(),
     "public",
-    "Collection_TIME"
+    "new-collection"
   );
 
   try {
@@ -15,8 +15,14 @@ export async function GET() {
     const textFileData = await getTextFileData(COLLECTION_TIME_FOLDER_PATH);
     const invertedIndex = createInvertedIndex(textFileData);
 
-    await saveInvertedIndex(invertedIndex);
+    console.log("this is the file data");
+    console.log(textFileData);
+    console.log(invertedIndex);
 
+    console.log("aaving to database....");
+    await saveInvertedIndex(invertedIndex).catch((err) => console.log(err));
+
+    console.log("the process has been created");
     return NextResponse.json({
       invertedIndex,
     });

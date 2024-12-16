@@ -1,57 +1,71 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import { normalizeTerms } from "@/lib/text-processing"; // Assuming this is where normalization is defined
+import { handleTerms } from "@/lib/text-processing";
 import { getInvertedIndex } from "@/lib/db-functions";
 
-interface InvertedIndexEntry {
-  docId: string;
-  positions: number[];
-}
+export async function performBooleanSearch(query: string): Promise<string[]> {
+  // Step 1: Normalize the query terms
+  const termsAndOperators = parseBooleanQuery(query);
 
-// Type for Inverted Index Result
-interface InvertedIndexResult {
-  term: string;
-  documents: InvertedIndexEntry[];
-}
+  // Step 2: Retrieve inverted index results for all terms
+  const termResults: Record<string, Set<string>> = {};
+  for (const item of termsAndOperators) {
+    if (item.term && !termResults[item.term]) {
+      const normalizedTerm = handleTerms(item.term)[0];
 
-// Boolean retrieval function
-async function performBooleanSearch(query: string): Promise<string[]> {
-  // Normalize the query terms
-  const normalizedTerms = normalizeTerms(query);
+      const result = await getInvertedIndex(normalizedTerm);
+      const docSet: Set<string> = new Set(
+        result?.documents.map((doc: { docId: any }) => doc.docId) || []
+      );
 
-  // ali is here -> ['ali' , 'here"]
-
-  console.log("these are the normalize terms ");
-  console.log(normalizedTerms);
-  // Retrieve inverted index for all normalized terms
-  const termResults: (InvertedIndexResult | null)[] = await Promise.all(
-    normalizedTerms.map((term) => getInvertedIndex(term))
-  );
-
-  console.log("these are the termresults ");
-
-  console.log(termResults);
-  // Filter out null results
-  const validResults = termResults.filter(
-    (result): result is InvertedIndexResult => result !== null
-  );
-
-  if (validResults.length === 0) {
-    return []; // No matching documents
+      // Merge results for the current term
+      termResults[normalizedTerm] = termResults[normalizedTerm]
+        ? new Set<string>([...termResults[normalizedTerm], ...docSet])
+        : docSet;
+    }
   }
 
-  // Extract document IDs for each term
-  const documentSets = validResults?.map(
-    (result) => new Set(result?.documents?.map((entry) => entry.docId))
-  );
+  // Step 3: Evaluate the query based on terms and connectors
+  let currentResult: Set<string> | null = null;
 
-  console.log(documentSets);
+  for (let i = 0; i < termsAndOperators.length; i++) {
+    const item = termsAndOperators[i];
 
-  // Perform intersection of document sets (AND operation)
-  const relevantDocuments = documentSets.reduce((acc, currentSet) => {
-    return new Set([...acc].filter((docId) => currentSet.has(docId)));
-  }, documentSets[0]);
+    if (item.term) {
+      // Get the document set for this term
+      const normalizedTerms = handleTerms(item.term);
+      const docSet = normalizedTerms.reduce(
+        (acc, term) =>
+          new Set([...acc, ...(termResults[term] || new Set<string>())]),
+        new Set<string>()
+      );
 
-  return Array.from(relevantDocuments);
+      if (currentResult === null) {
+        currentResult = new Set(docSet);
+      } else {
+        // Default operator is OR (union)
+        currentResult = new Set([...currentResult, ...docSet]);
+      }
+    } else if (item.operator === "AND") {
+      // Handle AND operator (intersection with the next term)
+      const nextTerm = termsAndOperators[i + 1]?.term;
+      if (nextTerm) {
+        const normalizedTerms = handleTerms(nextTerm);
+        const nextDocSet = normalizedTerms.reduce(
+          (acc, term) =>
+            new Set([...acc, ...(termResults[term] || new Set<string>())]),
+          new Set<string>()
+        );
+
+        currentResult = new Set(
+          [...currentResult!].filter((docId) => nextDocSet.has(docId))
+        );
+        i++; // Skip the next term as it's already processed
+      }
+    }
+  }
+
+  return Array.from(currentResult || []);
 }
 
 export async function POST(request: Request) {
@@ -67,10 +81,6 @@ export async function POST(request: Request) {
     // Perform boolean search
     const results = await performBooleanSearch(query);
 
-    console.log("thses are the final results");
-    console.log(results);
-
-    // Return results
     return NextResponse.json({
       results,
       total: results.length,
@@ -85,4 +95,22 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+// Helper function to parse the query
+function parseBooleanQuery(
+  query: string
+): Array<{ term?: string; operator?: string }> {
+  const parts = query.split(/\s+/);
+  const result: Array<{ term?: string; operator?: string }> = [];
+
+  for (const part of parts) {
+    if (part.toUpperCase() === "AND") {
+      result.push({ operator: "AND" });
+    } else {
+      result.push({ term: part });
+    }
+  }
+
+  return result;
 }

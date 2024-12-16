@@ -20,5 +20,5 @@ const InvertedIndexSchema = new Schema<InvertedIndexSchema>({
   documents: { type: [TermDocumentSchema], required: true },
 });
 
-export default models.InvertedIndex ||
-  model("InvertedIndex", InvertedIndexSchema);
+export default models.FichieInverse ||
+  model("FichieInverse", InvertedIndexSchema);

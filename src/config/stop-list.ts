@@ -94,7 +94,6 @@ export const stoplist: string[] = [
   "without",
 
   // Conjunctions
-  "and",
   "or",
   "nor",
   "but",
@@ -305,4 +304,9 @@ export const stoplist: string[] = [
   "baz",
   "qux",
   "quux",
+  ":",
+  "(",
+  ")",
+  `"`,
+  "+",
 ];
